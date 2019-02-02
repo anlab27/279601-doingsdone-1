@@ -1,35 +1,67 @@
 'use strict';
 
-var $checkbox = document.getElementsByClassName('show_completed');
+var expandControls = document.querySelectorAll('.expand-control');
 
-if ($checkbox.length) {
-  $checkbox[0].addEventListener('change', function (event) {
-    var is_checked = +event.target.checked;
-
-    window.location = '/index.php?show_completed=' + is_checked;
+var hidePopups = function () {
+  [].forEach.call(document.querySelectorAll('.expand-list'), function (item) {
+    item.classList.add('hidden');
   });
-}
+};
 
-var $taskCheckboxes = document.getElementsByClassName('tasks');
+document.body.addEventListener('click', hidePopups, true);
 
-if ($taskCheckboxes.length) {
+[].forEach.call(expandControls, function (item) {
+  item.addEventListener('click', function () {
+    item.nextElementSibling.classList.toggle('hidden');
+  });
+});
 
-  $taskCheckboxes[0].addEventListener('change', function (event) {
-    if (event.target.classList.contains('task__checkbox')) {
-      var el = event.target;
+document.body.addEventListener('click', function (event) {
+  var target = event.target;
+  var modal = null;
 
-      var is_checked = +el.checked;
-      var task_id = el.getAttribute('value');
+  if (target.classList.contains('open-modal')) {
+    var modal_id = target.getAttribute('target');
+    modal = document.getElementById(modal_id);
 
-      var url = '/index.php?task_id=' + task_id + '&check=' + is_checked;
-      window.location = url;
+    if (modal) {
+      document.body.classList.add('overlay');
+      modal.removeAttribute('hidden');
     }
-  });
-}
+  }
+
+  if (target.classList.contains('modal__close')) {
+    modal = target.parentNode;
+    modal.setAttribute('hidden', 'hidden');
+    document.body.classList.remove('overlay');
+  }
+});
+
+var $checkbox = document.getElementsByClassName('show_completed')[0];
+
+$checkbox.addEventListener('change', function (event) {
+  var is_checked = +event.target.checked;
+
+  window.location = '/index.php?show_completed=' + is_checked;
+});
+
+var $taskCheckboxes = document.getElementsByClassName('tasks')[0];
+
+$taskCheckboxes.addEventListener('change', function (event) {
+  if (event.target.classList.contains('task__checkbox')) {
+    var el = event.target;
+
+    var is_checked = +el.checked;
+    var task_id = el.getAttribute('value');
+
+    var url = '/index.php?task_id=' + task_id + '&check=' + is_checked;
+    window.location = url;
+  }
+});
 
 flatpickr('#date', {
-  enableTime: false,
-  dateFormat: "d.m.Y",
+  enableTime: true,
+  dateFormat: "Y-m-d H:i",
   time_24hr: true,
   locale: "ru"
 });
