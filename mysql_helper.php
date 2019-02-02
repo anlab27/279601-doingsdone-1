@@ -43,3 +43,14 @@ function db_get_prepare_stmt($link, $sql, $data = []) {
 
     return $stmt;
 }
+
+function db_get_result_stmt($stmt) : array {
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
+    if (!$result) {
+        die('Ошибка MySQL ' . mysqli_stmt_error($stmt) . 'в файле ' . __FILE__ . 'в строке ' . __LINE__);
+    }
+    
+    return mysqli_fetch_all($result, MYSQLI_ASSOC);
+}
